@@ -1,63 +1,225 @@
-// doc
-# Badminton match and fee management web application
-   - This app is using to create match and player, that created purpose is sharing the fee after finish play period
+# Badminton Match & Fee Management System
+**Business Requirements & Feature Specifications**
 
-## App features
+## Project Overview
+A comprehensive web application for managing badminton matches and calculating shared fees among players. The system tracks matches, manages players, and automates fee calculations based on court rental costs and shuttlecock usage.
 
-## Units
-   - Currency: VND with min is 1.000VND
-   - Match time duration: minute
+## Business Context
+- **Purpose**: Automate fee splitting after badminton sessions
+- **Target Users**: Badminton groups, clubs, and casual players
+- **Use Case**: Players want to fairly distribute costs (court rent + shuttlecocks) based on participation and match results
 
+## Core Business Rules
 
-### Enter fixed cost
-   - We will enter them before create any match
-   - Cost variables: 
-      + Price for rent stage
-      + Price for per shuttlecock
+### Currency & Units
+- **Currency**: Vietnamese Dong (VND)
+- **Minimum Amount**: 1,000 VND
+- **Duration**: Minutes
+- **Rounding**: All final totals rounded UP to nearest 1,000 VND
 
-### Create Player
-   - Have a text input and `Add` button
-   - This field will submit when i click on `Add` button or enter key
-   - Those player will be storage in localstorage with unique id and name
-   - Each player will display in a tag with name and `x` button
+### Fee Calculation Logic
+#### Match Fees (Court Rental)
+- **Formula**: (Hourly Rent × Duration in Hours) ÷ Total Players in Match
+- **Distribution**: Split equally among ALL players in the match
+- **Example**: 120,000 VND/hour × 1.5 hours ÷ 4 players = 45,000 VND per player
 
-### Remove employee
-   - When i click on `x` button, that player will be removed from the list
+#### Shuttlecock Fees
+- **Formula**: (Shuttlecock Price × Count Used) ÷ Losing Team Size
+- **Distribution**: Only LOSING team pays for shuttlecocks
+- **Example**: 30,000 VND/shuttlecock × 2 shuttlecocks ÷ 2 losing players = 30,000 VND per losing player
 
-### Create a match
-   - Have a `Create new match` button, when i click on it, that will trigger to appear a form to create a new match.
-   - In this form we will have bellow fields:
-      + Team 1 and Team 2
-         . In each team we can select 1 or 2 player
-         . Select team player must be a select box, after select, the selected player will be appear in a tag.
-         . If the players are selected for team 1, we can't select them for team 2
-      + shuttlecock number are used: number, and > 0
-      + The match duration: minutes
-      + Team win: team 1 or team 2
-   
-   - We will have a `Save` button at the button. When i click on it the match will be save to the localstorage with unique id and match information
+#### Total Player Fee
+- Sum of all match fees + shuttlecock fees from matches played
+- Final amount rounded UP to nearest 1,000 VND
 
-   - After the match created, it will be appear on screen in the card and creation form will be hidden That card will save `x` button, when i click on it, it will be removed in the storage
+## Detailed Feature Requirements
 
+### 1. Cost Settings Management
+#### Business Requirements
+- Must be configured before creating any matches
+- Settings persist across sessions
+- Validation ensures realistic pricing
 
-### Update a match
-   - When i click on match card, The form update will be appear on screen and fill default all field by the match info
-   - After update i can click on `Update match` button to save then the match info will bw updated and the form update will be hidden
+#### Functional Requirements
+- **Court Rent Input**: Hourly rate in VND (minimum 1,000)
+- **Shuttlecock Price Input**: Per shuttlecock cost in VND (minimum 1,000)
+- **Validation**: Both fields required, numeric only, minimum 1,000 VND
+- **Storage**: Persist in localStorage as `badminton_costs`
+- **UI**: Form with save button, success feedback
 
-### Calculation fee
+#### User Stories
+- As a session organizer, I want to set court rental rates so fees can be calculated accurately
+- As a user, I want to update shuttlecock prices to reflect current market rates
 
+### 2. Player Management
+#### Business Requirements
+- Support unlimited players
+- Each player has unique identity
+- Players can be added/removed dynamically
 
-   - Have a `calculate` button, when i click on it will calculate fee with bellow rule:
+#### Functional Requirements
+- **Add Player**: Text input + Add button OR Enter key
+- **Remove Player**: Click X button on player tag
+- **Storage**: localStorage as `badminton_players` with UUID
+- **Validation**: Non-empty names, no duplicates
+- **Display**: Player tags with name and remove button
 
-   - Each match
-      +  Shuttlecock fee: Team lose will pay for shuttlecock fee share for all team lose player
-      + Match fee: calculate via match duration and Price for rent stage from cost variable, share for all player in this match
+#### User Stories
+- As a session organizer, I want to quickly add new players to the system
+- As a user, I want to remove players who won't participate today
 
-   - Total fee: total the fee for each employee from all match their join
+### 3. Match Creation & Management
+#### Business Requirements
+- Track match details for accurate fee calculation
+- Support singles (1v1) and doubles (2v2) formats
+- Record winners for shuttlecock fee distribution
 
-   - The fee will round up
+#### Functional Requirements
+##### Team Selection
+- **Team 1 & Team 2**: 1-2 players each via dropdown
+- **Validation**: 
+  - Minimum 1 player per team
+  - No player on both teams
+  - All selected players must exist
+- **Display**: Selected players as removable tags
 
-   - Create a table to show fee for each player, the table will how name, match number their join
+##### Match Details
+- **Duration**: Minutes (required, > 0)
+- **Shuttlecocks Used**: Count (required, > 0) 
+- **Winner**: Team 1 or Team 2 (required)
 
-   ### reset all
-      - When i click on reset all button, this app will reset all info
+##### CRUD Operations
+- **Create**: Modal form with validation
+- **Read**: Display matches as cards with all details
+- **Update**: Click match card to edit in same modal
+- **Delete**: X button with confirmation
+
+#### User Stories
+- As a player, I want to record match results so fees are calculated correctly
+- As a session organizer, I want to edit incorrect match data
+- As a user, I want to see all matches played in a session
+
+### 4. Fee Calculation & Display
+#### Business Requirements
+- Automatic calculation based on match participation
+- Transparent breakdown for each player
+- Real-time updates when matches change
+
+#### Functional Requirements
+##### Player Statistics
+- **Matches Played**: Count of matches participated
+- **Wins**: Count of matches won
+- **Total Fee**: Sum of all match + shuttlecock fees
+
+##### Display Requirements
+- **Desktop**: Responsive table with columns
+- **Mobile**: Card layout for each player
+- **Summary**: Total fees across all players
+- **Empty State**: Message when no cost settings configured
+
+##### Calculation Rules
+1. For each match a player participated:
+   - Add match fee (rent share)
+   - If on losing team: add shuttlecock fee share
+2. Round final total UP to nearest 1,000 VND
+
+#### User Stories
+- As a player, I want to see exactly how much I owe and why
+- As a session organizer, I want to verify total costs match expected amounts
+- As a user, I want calculations to update automatically when matches change
+
+### 5. Data Management
+#### Business Requirements
+- Persist data across browser sessions
+- Allow complete reset for new sessions
+- Prevent accidental data loss
+
+#### Functional Requirements
+- **Storage**: localStorage with structured keys
+- **Reset**: Confirmation dialog before clearing all data
+- **Backup**: Data survives browser refresh
+- **Keys**:
+  - `badminton_players`: Player array
+  - `badminton_matches`: Match array  
+  - `badminton_costs`: Cost settings object
+
+#### User Stories
+- As a session organizer, I want to reset all data to start fresh
+- As a user, I want my data saved automatically
+
+## User Interface Requirements
+
+### Layout & Navigation
+- **Single Page Application**: No page routing needed
+- **Responsive Design**: Mobile-first approach
+- **Grid Layout**: Sidebar (settings/players) + main area (matches/fees)
+- **Progressive Disclosure**: Forms appear in modals
+
+### Visual Design
+- **Modern**: Clean, card-based layout
+- **Professional**: Suitable for sports/business use
+- **Accessible**: Clear labels, good contrast
+- **Branded**: Consistent color scheme throughout
+
+### User Experience
+- **Intuitive**: Common patterns (forms, tables, modals)
+- **Efficient**: Keyboard shortcuts (Enter to submit)
+- **Forgiving**: Confirmation dialogs for destructive actions
+- **Responsive**: Immediate feedback for user actions
+
+## Success Criteria
+
+### Functional Success
+- [ ] Users can configure cost settings before creating matches
+- [ ] Players can be added/removed dynamically
+- [ ] Matches can be created with proper team selection and validation
+- [ ] Fee calculations are accurate according to business rules
+- [ ] Data persists across browser sessions
+- [ ] All features work on mobile and desktop
+
+### User Experience Success
+- [ ] New users can understand the workflow without training
+- [ ] Fee calculations are transparent and verifiable
+- [ ] Common tasks (add player, create match) are quick and easy
+- [ ] System provides helpful feedback and error messages
+
+### Technical Success
+- [ ] No data loss during normal usage
+- [ ] Performance remains good with reasonable amounts of data
+- [ ] Application works in modern browsers
+- [ ] Code is maintainable and well-structured
+
+## Business Process Flow
+
+1. **Session Setup**
+   - Configure court rent and shuttlecock prices
+   - Add all participating players
+
+2. **Match Recording**
+   - Create matches as they're played
+   - Record teams, duration, shuttlecocks used, winner
+
+3. **Fee Calculation**
+   - Review fee breakdown for each player
+   - Verify totals match expected costs
+
+4. **Session End**
+   - Collect fees from players
+   - Optionally reset for next session
+
+## Edge Cases & Business Logic
+
+### Player Scenarios
+- **Single Player Multiple Matches**: Fees accumulate correctly
+- **Player Removal**: Cannot remove if player is in existing matches
+- **Duplicate Names**: System prevents confusion
+
+### Match Scenarios
+- **Unequal Teams**: 1v2 matches supported with fair fee distribution
+- **Zero Shuttlecocks**: Allowed (practice matches)
+- **Long Matches**: No upper limit on duration
+
+### Calculation Scenarios
+- **Rounding**: Always benefits the house (rounds up)
+- **Empty Matches**: No matches = zero fees
+- **Missing Cost Settings**: Graceful handling with user guidance

@@ -1,19 +1,39 @@
-- Technical stacks: Typescript, Tailwind CSS, shadcn-ui, React
-- Project type: Web application.
-- Project purpose: To create a web application that allows users to manage the badminton match and fee.
-- Rule: 
-   + The application should be, user-friendly and responsive.
-   + Design should be clean, fancy, beautify and modern.
+# Badminton Match & Fee Management System - Technical Implementation Guide
+
+## Project Overview
+Build a comprehensive badminton match and fee management web application using modern React ecosystem. This is a single-page application for tracking badminton matches, managing players, and calculating shared fees with localStorage persistence.
+
+## Technical Stack
+- **Frontend**: React 19.1.0 + TypeScript (strict mode)
+- **Build Tool**: Vite 6.3.5 with HMR
+- **Styling**: Tailwind CSS 4.1.7 with @tailwindcss/vite plugin
+- **UI Components**: shadcn/ui (New York style) with Radix UI primitives
+- **Forms**: react-hook-form + @hookform/resolvers + zod validation
+- **Icons**: lucide-react for consistent iconography
+- **Utilities**: class-variance-authority, clsx, tailwind-merge
+- **Data Storage**: localStorage with JSON serialization
+- **UUID Generation**: uuid v11.1.0 for unique identifiers
+
+## Architecture & File Structure
+
+```
+src/
+├── components/                # Reusable components
+│   ├── ui/                    # shadcn/ui base components
+│  
+├── lib/                  # Business logic and utilities
+├── App.tsx                   # Main layout and state orchestration
+├── main.tsx                  # React 19 root setup
+└── index.css                 # Tailwind directives and global styles
+```
 
 
-- Code style: 
-   + Use ES6+ syntax.
-   + Use tailwind css version 4.1
-   + Follow the Airbnb javascript style guide.
-   + Split the code into multiple files and folders for better organization.
-   + Write clean and readable code.
-   + Use functional components and hooks.
-   + Use TypeScript for type safety.
-   + Use shadcn-ui for UI components.
-   + Use local storage for data persistence.
-   + Use react-hook-form for form handling and zod for validation.
+## Performance & Optimization
+
+### Mobile Performance
+- Touch-friendly interaction targets (44px minimum)
+- Optimized images and icons
+- Efficient re-rendering with proper dependencies
+- Smooth animations with CSS transitions
+
+This comprehensive technical guide provides all the implementation details needed to rebuild the badminton fee management application with the exact same functionality, styling, and architecture.
