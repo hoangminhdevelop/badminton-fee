@@ -10,7 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { Pause, Play, Square } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { getMatches, getPlayers, saveMatches } from "../lib/storage";
@@ -38,12 +39,20 @@ export default function MatchForm({
   const players = getPlayers();
   const [show, setShow] = useState(false);
 
+  // Timer states
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [useDurationInput, setUseDurationInput] = useState(!!editingMatch);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Auto-open form when editingMatch is provided (for clicking on matches in the list)
   useEffect(() => {
     if (editingMatch) {
       setShow(true);
+      setUseDurationInput(true); // Force manual input for editing
     } else {
       setShow(false);
+      setUseDurationInput(false); // Allow timer for new matches
     }
   }, [editingMatch]);
 
@@ -68,10 +77,59 @@ export default function MatchForm({
           team1: [],
           team2: [],
           shuttlecockUsed: 0,
-          duration: 30,
+          duration: 1,
           winner: "team1",
         },
   });
+
+  // Timer effect
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerRef.current = setInterval(() => {
+        setTimerSeconds((prev) => {
+          const newSeconds = prev + 1;
+          const minutes = Math.floor(newSeconds / 60);
+          setValue("duration", minutes || 1); // Set minimum 1 minute
+          return newSeconds;
+        });
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isTimerRunning, setValue]);
+
+  // Timer functions
+  const startTimer = () => {
+    setIsTimerRunning(true);
+  };
+
+  const pauseTimer = () => {
+    setIsTimerRunning(false);
+  };
+
+  const stopTimer = () => {
+    setIsTimerRunning(false);
+    const minutes = Math.floor(timerSeconds / 60);
+    setValue("duration", minutes || 1);
+    setTimerSeconds(0);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   const team1 = watch("team1");
   const team2 = watch("team2");
@@ -92,12 +150,29 @@ export default function MatchForm({
       const newMatch: Match = { id: crypto.randomUUID(), ...data };
       saveMatches([...matches, newMatch]);
     }
+
+    // Reset form and timer state
     reset();
+    setIsTimerRunning(false);
+    setTimerSeconds(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     setShow(false);
     if (onSave) onSave();
   };
 
   const handleClose = () => {
+    // Reset timer state on close
+    setIsTimerRunning(false);
+    setTimerSeconds(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     setShow(false);
     if (onSave) onSave();
   };
@@ -107,7 +182,7 @@ export default function MatchForm({
       {triggerOnly ? (
         <Button
           onClick={() => setShow(true)}
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="bg-green-500 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 text-sm sm:text-base"
         >
           {editingMatch ? "Edit Match" : "Create New Match"}
         </Button>
@@ -137,109 +212,150 @@ export default function MatchForm({
               onSubmit={handleSubmit(onSubmit)}
               className="space-y-4 sm:space-y-5"
             >
-              {/* ...existing form content... */}
+              {/* Player Selection */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
+                <label className="block text-sm font-medium mb-3 text-slate-700">
                   Team 1
+                  {team1.length > 0 && (
+                    <span className="ml-2 text-xs text-slate-500">
+                      ({team1.length}/2 selected)
+                    </span>
+                  )}
                 </label>
-                <Select
-                  value=""
-                  className="w-full h-10 sm:h-11"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val && !team1.includes(val) && team1.length < 2) {
-                      setValue("team1", [...team1, val]);
-                    }
-                    e.target.value = "";
-                  }}
-                >
-                  <option value="" disabled>
-                    Select player
-                  </option>
-                  {availableForTeam("team1")
-                    .filter((p) => !team1.includes(p.id))
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </Select>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                  {team1.map((id) => {
-                    const player = players.find((p) => p.id === id);
-                    if (!player) return null;
-                    return (
-                      <Badge
-                        key={id}
-                        variant="default"
-                        className="text-xs sm:text-sm"
-                        onRemove={() =>
-                          setValue(
-                            "team1",
-                            team1.filter((pid) => pid !== id)
-                          )
-                        }
-                      >
-                        {player.name}
-                      </Badge>
-                    );
-                  })}
+                <div className="space-y-2">
+                  {/* Selected players for Team 1 */}
+                  {team1.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 p-2 bg-blue-50 rounded-lg border">
+                      {team1.map((id) => {
+                        const player = players.find((p) => p.id === id);
+                        if (!player) return null;
+                        return (
+                          <Badge
+                            key={id}
+                            variant="default"
+                            className="text-xs sm:text-sm bg-blue-500 hover:bg-blue-600 cursor-pointer"
+                            onRemove={() =>
+                              setValue(
+                                "team1",
+                                team1.filter((pid) => pid !== id)
+                              )
+                            }
+                          >
+                            {player.name}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Available players for Team 1 */}
+                  {team1.length < 2 && (
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      <span className="text-xs text-slate-500 w-full mb-1">
+                        Available players:
+                      </span>
+                      {availableForTeam("team1")
+                        .filter((p) => !team1.includes(p.id))
+                        .map((player) => (
+                          <button
+                            key={player.id}
+                            type="button"
+                            onClick={() => {
+                              if (team1.length < 2) {
+                                setValue("team1", [...team1, player.id]);
+                              }
+                            }}
+                            className="px-2 py-1 text-xs sm:text-sm border border-slate-300 rounded-md hover:bg-blue-50 hover:border-blue-300 transition-colors duration-150 bg-white text-slate-700"
+                          >
+                            {player.name}
+                          </button>
+                        ))}
+                      {availableForTeam("team1").filter(
+                        (p) => !team1.includes(p.id)
+                      ).length === 0 && (
+                        <span className="text-xs text-slate-400 italic">
+                          No available players
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {errors.team1 && (
-                  <span className="text-destructive text-xs sm:text-sm">
+                  <span className="text-destructive text-xs sm:text-sm mt-1 block">
                     {errors.team1.message as string}
                   </span>
                 )}
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
+                <label className="block text-sm font-medium mb-3 text-slate-700">
                   Team 2
+                  {team2.length > 0 && (
+                    <span className="ml-2 text-xs text-slate-500">
+                      ({team2.length}/2 selected)
+                    </span>
+                  )}
                 </label>
-                <Select
-                  value=""
-                  className="w-full h-10 sm:h-11"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val && !team2.includes(val) && team2.length < 2) {
-                      setValue("team2", [...team2, val]);
-                    }
-                    e.target.value = "";
-                  }}
-                >
-                  <option value="" disabled>
-                    Select player
-                  </option>
-                  {availableForTeam("team2")
-                    .filter((p) => !team2.includes(p.id))
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </Select>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                  {team2.map((id) => {
-                    const player = players.find((p) => p.id === id);
-                    if (!player) return null;
-                    return (
-                      <Badge
-                        key={id}
-                        variant="secondary"
-                        className="text-xs sm:text-sm"
-                        onRemove={() =>
-                          setValue(
-                            "team2",
-                            team2.filter((pid) => pid !== id)
-                          )
-                        }
-                      >
-                        {player.name}
-                      </Badge>
-                    );
-                  })}
+                <div className="space-y-2">
+                  {/* Selected players for Team 2 */}
+                  {team2.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 p-2 bg-green-50 rounded-lg border">
+                      {team2.map((id) => {
+                        const player = players.find((p) => p.id === id);
+                        if (!player) return null;
+                        return (
+                          <Badge
+                            key={id}
+                            variant="secondary"
+                            className="text-xs sm:text-sm bg-green-500 hover:bg-green-600 text-white cursor-pointer"
+                            onRemove={() =>
+                              setValue(
+                                "team2",
+                                team2.filter((pid) => pid !== id)
+                              )
+                            }
+                          >
+                            {player.name}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Available players for Team 2 */}
+                  {team2.length < 2 && (
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      <span className="text-xs text-slate-500 w-full mb-1">
+                        Available players:
+                      </span>
+                      {availableForTeam("team2")
+                        .filter((p) => !team2.includes(p.id))
+                        .map((player) => (
+                          <button
+                            key={player.id}
+                            type="button"
+                            onClick={() => {
+                              if (team2.length < 2) {
+                                setValue("team2", [...team2, player.id]);
+                              }
+                            }}
+                            className="px-2 py-1 text-xs sm:text-sm border border-slate-300 rounded-md hover:bg-green-50 hover:border-green-300 transition-colors duration-150 bg-white text-slate-700"
+                          >
+                            {player.name}
+                          </button>
+                        ))}
+                      {availableForTeam("team2").filter(
+                        (p) => !team2.includes(p.id)
+                      ).length === 0 && (
+                        <span className="text-xs text-slate-400 italic">
+                          No available players
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {errors.team2 && (
-                  <span className="text-destructive text-xs sm:text-sm">
+                  <span className="text-destructive text-xs sm:text-sm mt-1 block">
                     {errors.team2.message as string}
                   </span>
                 )}
@@ -270,17 +386,91 @@ export default function MatchForm({
                 <label className="block text-sm font-medium mb-2 text-slate-700">
                   Duration (minutes)
                 </label>
-                <Input
-                  type="number"
-                  className="h-10 sm:h-11"
-                  {...register("duration", {
-                    valueAsNumber: true,
-                    validate: (value) =>
-                      value >= 1 || "Must be at least 1 minute",
-                  })}
-                  min={1}
-                  step={1}
-                />
+
+                {!editingMatch && (
+                  <div className="mb-3">
+                    <div className="flex gap-2 mb-2">
+                      <Button
+                        type="button"
+                        variant={useDurationInput ? "outline" : "default"}
+                        size="sm"
+                        onClick={() => setUseDurationInput(false)}
+                        className="flex-1"
+                      >
+                        Timer
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={useDurationInput ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setUseDurationInput(true)}
+                        className="flex-1"
+                      >
+                        Manual Input
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {!useDurationInput && !editingMatch ? (
+                  <div className="space-y-3">
+                    <div className="text-center">
+                      <div className="text-2xl font-mono font-bold text-slate-700 mb-2">
+                        {formatTime(timerSeconds)}
+                      </div>
+                      <div className="text-sm text-slate-500">
+                        Duration: {Math.floor(timerSeconds / 60) || 1} minutes
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      {!isTimerRunning ? (
+                        <Button
+                          type="button"
+                          onClick={startTimer}
+                          variant="default"
+                          size="sm"
+                          className="bg-green-500 hover:bg-green-600"
+                        >
+                          <Play className="w-4 h-4 mr-1" />
+                          Start
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          onClick={pauseTimer}
+                          variant="default"
+                          size="sm"
+                          className="bg-yellow-500 hover:bg-yellow-600"
+                        >
+                          <Pause className="w-4 h-4 mr-1" />
+                          Pause
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        onClick={stopTimer}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Square className="w-4 h-4 mr-1" />
+                        Stop
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Input
+                    type="number"
+                    className="h-10 sm:h-11"
+                    {...register("duration", {
+                      valueAsNumber: true,
+                      validate: (value) =>
+                        value >= 1 || "Must be at least 1 minute",
+                    })}
+                    min={1}
+                    step={1}
+                  />
+                )}
+
                 {errors.duration && (
                   <span className="text-destructive text-xs sm:text-sm">
                     {errors.duration.message}

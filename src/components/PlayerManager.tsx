@@ -100,7 +100,7 @@ export default function PlayerManager({ onChange }: { onChange?: () => void }) {
                   </span>
                   <button
                     onClick={() => removePlayer(player.id)}
-                    className="ml-1 text-slate-400 hover:text-red-500 transition-colors duration-200 opacity-0 group-hover:opacity-100 p-1"
+                    className="ml-1 text-slate-400 hover:text-red-500 transition-colors duration-200 p-1"
                     title="Remove player"
                   >
                     <svg

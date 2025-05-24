@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCosts, saveCosts } from "../lib/storage";
@@ -14,6 +16,8 @@ type CostForm = z.infer<typeof costSchema>;
 
 export default function CostSettings({ onSave }: { onSave?: () => void }) {
   const defaultValues = getCosts() || { rent: 1000, shuttlecock: 1000 };
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -23,8 +27,18 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
     defaultValues,
   });
 
+  useEffect(() => {
+    if (showSaveConfirmation) {
+      const timer = setTimeout(() => {
+        setShowSaveConfirmation(false);
+      }, 3000); // Hide after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showSaveConfirmation]);
+
   const onSubmit = (data: CostForm) => {
     saveCosts(data);
+    setShowSaveConfirmation(true);
     if (onSave) onSave();
   };
 
@@ -99,6 +113,16 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
         >
           Save Settings
         </Button>
+
+        {/* Save Confirmation */}
+        {showSaveConfirmation && (
+          <div className="flex items-center gap-2 justify-center p-3 bg-emerald-50 border border-emerald-200 rounded-lg sm:rounded-xl text-emerald-700 animate-in fade-in duration-300">
+            <Check className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              Settings saved successfully!
+            </span>
+          </div>
+        )}
       </form>
     </div>
   );
