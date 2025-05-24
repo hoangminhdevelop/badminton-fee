@@ -1,54 +1,79 @@
-# React + TypeScript + Vite
+# 🏸 Badminton Fee Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive web application for managing badminton matches and calculating fees. Built with React, TypeScript, Tailwind CSS, and shadcn/ui.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 👥 **Player Management**: Add and manage players
+- 🏆 **Match Tracking**: Record matches with teams, duration, and winners
+- 💰 **Fee Calculation**: Automatic fee calculation based on shuttlecock usage
+- ⚙️ **Cost Settings**: Configurable court and shuttlecock costs
+- 📱 **Mobile Responsive**: Optimized for all device sizes
+- 💾 **Local Storage**: Data persists locally in your browser
+- 🎨 **Modern UI**: Clean, beautiful interface with smooth animations
 
-## Expanding the ESLint configuration
+## 🚀 Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Development
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This app is configured for automatic deployment to Surge.sh via GitHub Actions.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+📖 **See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions**
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, TypeScript
+- **Styling**: Tailwind CSS 4.1, shadcn/ui
+- **Forms**: React Hook Form, Zod validation
+- **Build**: Vite
+- **Deployment**: Surge.sh via GitHub Actions
+- **Code Quality**: ESLint, TypeScript strict mode
+
+## 📱 Mobile Optimization
+
+The app features a mobile-first responsive design with:
+- Touch-friendly buttons and inputs
+- Optimized layouts for small screens
+- Card-based design for mobile readability
+- Responsive typography and spacing
+- Mobile-specific navigation patterns
+
+## 🎯 Usage
+
+1. **Add Players**: Start by adding players to your roster
+2. **Configure Costs**: Set court and shuttlecock costs in settings
+3. **Record Matches**: Create matches with teams and track shuttlecock usage
+4. **View Fees**: Check the automatically calculated fees for each player
+5. **Reset Data**: Use the reset button to clear all data when needed
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly on mobile and desktop
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - feel free to use this project for your badminton group!
+
+---
+
+Made with ❤️ for badminton enthusiasts
