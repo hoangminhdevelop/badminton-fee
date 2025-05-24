@@ -17,15 +17,59 @@ type CostForm = z.infer<typeof costSchema>;
 export default function CostSettings({ onSave }: { onSave?: () => void }) {
   const defaultValues = getCosts() || { rent: 1000, shuttlecock: 1000 };
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // State for formatted display values
+  const [rentDisplay, setRentDisplay] = useState(
+    defaultValues.rent.toLocaleString("vi-VN")
+  );
+  const [shuttlecockDisplay, setShuttlecockDisplay] = useState(
+    defaultValues.shuttlecock.toLocaleString("vi-VN")
+  );
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<CostForm>({
     resolver: zodResolver(costSchema),
     defaultValues,
   });
+
+  // Format number to Vietnamese currency format (without currency symbol)
+  const formatCurrency = (value: string): string => {
+    // Remove all non-digit characters
+    const numericValue = value.replace(/\D/g, "");
+    if (!numericValue) return "";
+
+    // Convert to number and format with Vietnamese locale
+    return parseInt(numericValue).toLocaleString("vi-VN");
+  };
+
+  // Parse formatted string back to number
+  const parseCurrency = (formatted: string): number => {
+    const numericValue = formatted.replace(/\D/g, "");
+    return numericValue ? parseInt(numericValue) : 0;
+  };
+
+  // Handle rent input change
+  const handleRentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setRentDisplay(formatted);
+    const numericValue = parseCurrency(formatted);
+    setValue("rent", numericValue);
+    setHasChanges(true);
+  };
+
+  // Handle shuttlecock input change
+  const handleShuttlecockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setShuttlecockDisplay(formatted);
+    const numericValue = parseCurrency(formatted);
+    setValue("shuttlecock", numericValue);
+    setHasChanges(true);
+  };
 
   useEffect(() => {
     if (showSaveConfirmation) {
@@ -39,6 +83,7 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
   const onSubmit = (data: CostForm) => {
     saveCosts(data);
     setShowSaveConfirmation(true);
+    setHasChanges(false); // Reset changes flag after saving
     if (onSave) onSave();
   };
 
@@ -57,6 +102,12 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-3 sm:space-y-4"
       >
+        {/* Hidden inputs to store numeric values for form submission */}
+        <input type="hidden" {...register("rent", { valueAsNumber: true })} />
+        <input
+          type="hidden"
+          {...register("shuttlecock", { valueAsNumber: true })}
+        />
         <div className="bg-slate-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-slate-200">
           <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
             <svg
@@ -68,13 +119,18 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
             </svg>
             Court Rent (VND)
           </label>
-          <Input
-            type="number"
-            {...register("rent", { valueAsNumber: true })}
-            min={1000}
-            step={1000}
-            className="bg-white border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base h-10 sm:h-11"
-          />
+          <div className="relative">
+            <Input
+              type="text"
+              value={rentDisplay}
+              onChange={handleRentChange}
+              placeholder="0"
+              className="bg-white border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base h-10 sm:h-11 pr-12"
+            />
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 text-sm font-medium">
+              VND
+            </span>
+          </div>
           {errors.rent && (
             <span className="text-red-500 text-xs sm:text-sm mt-1 block">
               {errors.rent.message}
@@ -93,13 +149,18 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
             </svg>
             Shuttlecock (VND)
           </label>
-          <Input
-            type="number"
-            {...register("shuttlecock", { valueAsNumber: true })}
-            min={1000}
-            step={1000}
-            className="bg-white border-slate-300 focus:ring-amber-500 focus:border-amber-500 text-sm sm:text-base h-10 sm:h-11"
-          />
+          <div className="relative">
+            <Input
+              type="text"
+              value={shuttlecockDisplay}
+              onChange={handleShuttlecockChange}
+              placeholder="0"
+              className="bg-white border-slate-300 focus:ring-amber-500 focus:border-amber-500 text-sm sm:text-base h-10 sm:h-11 pr-12"
+            />
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 text-sm font-medium">
+              VND
+            </span>
+          </div>
           {errors.shuttlecock && (
             <span className="text-red-500 text-xs sm:text-sm mt-1 block">
               {errors.shuttlecock.message}
@@ -109,7 +170,8 @@ export default function CostSettings({ onSave }: { onSave?: () => void }) {
 
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-medium py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 text-sm sm:text-base h-10 sm:h-11"
+          disabled={!hasChanges}
+          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-medium py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 text-sm sm:text-base h-10 sm:h-11 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-emerald-500 disabled:hover:to-teal-500"
         >
           Save Settings
         </Button>
