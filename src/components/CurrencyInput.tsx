@@ -27,7 +27,8 @@ export function CurrencyInput({
 }: CurrencyInputProps) {
   const [displayValue, setDisplayValue] = React.useState(() => {
     if (formatAsNumber) {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value || 0;
+      const numValue =
+        typeof value === "string" ? parseFloat(value) || 0 : value || 0;
       return formatCurrencyInput(numValue.toString());
     }
     return value.toString();
@@ -37,7 +38,7 @@ export function CurrencyInput({
     if (formatAsNumber) {
       const formatted = formatCurrencyInput(inputValue);
       setDisplayValue(formatted);
-      
+
       // Pass the numeric value back to parent
       const numericValue = parseCurrency(formatted);
       onChange(numericValue.toString());
@@ -50,7 +51,8 @@ export function CurrencyInput({
   // Update display value when external value changes
   React.useEffect(() => {
     if (formatAsNumber) {
-      const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value || 0;
+      const numValue =
+        typeof value === "string" ? parseFloat(value) || 0 : value || 0;
       const newDisplayValue = formatCurrencyInput(numValue.toString());
       if (newDisplayValue !== displayValue) {
         setDisplayValue(newDisplayValue);

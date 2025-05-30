@@ -1,7 +1,7 @@
 import type { FeeResult } from "@/lib/types";
 import { DollarSign, Globe, Star } from "lucide-react";
 import { EmptyState } from "../EmptyState";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getPlayers } from "@/lib/storage";
@@ -19,6 +19,10 @@ export default function FeeTable() {
   const reloadFeeTable = () => {
     setFees(cost ? calculateFees(matches, player, cost) : []);
   };
+
+  useEffect(() => {
+    setFees(cost ? calculateFees(matches, player, cost) : []);
+  }, [matches, cost, player]);
 
   if (!cost) {
     return (
