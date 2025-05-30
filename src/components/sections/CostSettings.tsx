@@ -39,6 +39,8 @@ export default function CostSettings() {
 
   const onSubmit = (data: CostSettingsForm) => {
     updateCost(data);
+    // Reset form dirty state after successful save
+    form.reset(data);
   };
 
   return (

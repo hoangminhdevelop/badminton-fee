@@ -5,13 +5,9 @@ const COST_KEY_STORAGE = "costs";
 const PLAYERS_KEY_STORAGE = "players";
 export const MATCHES_KEY_STORAGE = "match-";
 
-const LATEST_PRICE = 1000; // Latest price in VND
-
 export function getCosts(): CostSettings | null {
   const costs = localStorage.getItem(COST_KEY_STORAGE);
-  return costs
-    ? JSON.parse(costs)
-    : { stage: LATEST_PRICE, shuttlecock: LATEST_PRICE };
+  return costs ? JSON.parse(costs) : null;
 }
 
 export function setCostsToStorage(costs: CostSettings) {
@@ -64,4 +60,16 @@ export function getMatchesInStorage(): Match[] {
 
 export function updateMatchInStorage(match: Match) {
   localStorage.setItem(match.id, JSON.stringify(match));
+}
+
+export function resetStorage() {
+  localStorage.removeItem(COST_KEY_STORAGE);
+  localStorage.removeItem(PLAYERS_KEY_STORAGE);
+
+  // Remove all matches
+  for (const key in localStorage) {
+    if (key.startsWith(MATCHES_KEY_STORAGE)) {
+      localStorage.removeItem(key);
+    }
+  }
 }
