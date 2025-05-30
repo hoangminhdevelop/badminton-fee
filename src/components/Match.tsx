@@ -2,7 +2,16 @@ import { Button } from "@/components/ui/button";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getPlayers } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-import { CheckCircle, Clock, Pause, Play, Star, Swords, X } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  Pause,
+  Play,
+  Rabbit,
+  Star,
+  Swords,
+  X,
+} from "lucide-react";
 import React, { useEffect } from "react";
 import type { Match as MatchType } from "../lib/types";
 import { Badge } from "./ui/badge";
@@ -120,6 +129,11 @@ export default function Match({ match }: MatchProps) {
               <span className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3 text-green-600" />
                 Winner: {match.winner === "team1" ? "Team 1" : "Team 2"}
+              </span>
+            )}
+            {match.isShareShuttlecockUsed && (
+              <span className="flex items-center gap-1">
+                <Rabbit size={16} />
               </span>
             )}
           </div>

@@ -35,15 +35,20 @@ export function calculateFees(
       }
     }
 
-    // Shuttlecock fee: team lose pays, split among them
+    const isShare = match.isShareShuttlecockUsed;
     const loser = match.winner === "team1" ? match.team2 : match.team1;
-    if (loser.length > 0 && match.shuttlecockUsed > 0) {
-      const shuttleFee = Math.ceil(
-        (costs.shuttlecock * match.shuttlecockUsed) / loser.length
-      );
-      for (const pid of loser) {
-        const p = playerMap.get(pid);
-        if (p) p.total += shuttleFee;
+    const allPlayersInMatch = [...match.team1, ...match.team2];
+
+    if (match.shuttlecockUsed > 0) {
+      const shareGroup = isShare ? allPlayersInMatch : loser;
+      if (shareGroup.length > 0) {
+        const shuttleFee = Math.ceil(
+          (costs.shuttlecock * match.shuttlecockUsed) / shareGroup.length
+        );
+        for (const pid of shareGroup) {
+          const player = playerMap.get(pid);
+          if (player) player.total += shuttleFee;
+        }
       }
     }
   }

@@ -14,10 +14,11 @@ export interface Match {
   team1: string[]; // player ids
   team2: string[]; // player ids
   shuttlecockUsed: number;
-  duration: number; // minutes
+  duration: number; // in seconds
   winner?: "team1" | "team2";
   isRunning: boolean;
   createdAt: Date; // ISO date string
+  isShareShuttlecockUsed: boolean; // true if shuttlecock is shared
 }
 
 export interface FeeResult {
