@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { CurrencyInput } from "@/components/CurrencyInput";
 import {
   Form,
   FormControl,
@@ -7,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useAppContext } from "@/hooks/useAppContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -53,7 +53,12 @@ export default function CostSettings() {
               <FormItem>
                 <FormLabel>Giá thuê sân (theo giờ)</FormLabel>
                 <FormControl>
-                  <Input placeholder="1.000" {...field} />
+                  <CurrencyInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="1.000"
+                    formatAsNumber={true}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -66,7 +71,12 @@ export default function CostSettings() {
               <FormItem>
                 <FormLabel>Giá cầu (theo quả)</FormLabel>
                 <FormControl>
-                  <Input placeholder="1.000" {...field} />
+                  <CurrencyInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="1.000"
+                    formatAsNumber={true}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
