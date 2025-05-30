@@ -75,6 +75,8 @@ export function CurrencyInput({
       <div className="relative">
         <Input
           type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           value={displayValue}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}

@@ -319,6 +319,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                           min={0}
                           step={1}
                           type="number"
+                          inputMode="numeric"
                           value={field.value || 0}
                           onChange={(e) => {
                             const value = parseInt(e.target.value, 10);
@@ -339,6 +340,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                       <FormControl>
                         <Input
                           type="number"
+                          inputMode="numeric"
                           className="h-10 sm:h-11"
                           min={1}
                           step={1}

@@ -53,40 +53,49 @@ export default function FeeTable() {
             </div>
           ) : (
             <>
-              {fees.map((f) => (
-                <div
-                  key={f.playerId}
-                  className="bg-slate-50 rounded-lg p-4 border border-slate-200"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div>
-                      <h3 className="font-semibold text-slate-800">{f.name}</h3>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div>
-                      <div className="text-xs text-slate-600 mb-1">Số trận</div>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                        {f.matches}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-600 mb-1">Thắng</div>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
-                        {f.wins}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="text-xs text-slate-600 mb-1">
-                        Phí (VND)
+              {fees.map(
+                (f) =>
+                  f.matches > 0 && (
+                    <div
+                      key={f.playerId}
+                      className="bg-slate-50 rounded-lg p-4 border border-slate-200"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div>
+                          <h3 className="font-semibold text-slate-800">
+                            {f.name}
+                          </h3>
+                        </div>
                       </div>
-                      <div className="font-semibold text-slate-900 text-sm">
-                        {f.total.toLocaleString()}
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div>
+                          <div className="text-xs text-slate-600 mb-1">
+                            Số trận
+                          </div>
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                            {f.matches}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 mb-1">
+                            Thắng
+                          </div>
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                            {f.wins}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 mb-1">
+                            Phí (VND)
+                          </div>
+                          <div className="font-semibold text-slate-900 text-sm">
+                            {f.total.toLocaleString()}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  )
+              )}
               {/* Mobile Total Card */}
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-4 border-2 border-amber-200 mt-4 flex justify-between items-center">
                 <div className="flex items-center gap-2 mb-3">
