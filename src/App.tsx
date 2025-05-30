@@ -20,7 +20,7 @@ function App() {
                 <CheckCircle className="w-5 h-5 sm:w-7 sm:h-7" />
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-                Badminton Manager
+                Badminton Share
               </h1>
             </div>
             <p className="text-base sm:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto px-4">
