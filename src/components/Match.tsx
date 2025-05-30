@@ -58,11 +58,7 @@ export default function Match({ match }: MatchProps) {
     if (match.isRunning) {
       setIsPlaying(true);
       timer.current = setInterval(() => {
-        setDuration((prev) => {
-          const newDuration = prev + 1;
-          updateMatch(match.id, { duration: newDuration });
-          return newDuration;
-        });
+        setDuration((prev) => prev + 1);
       }, 1000); // Increment every second
     } else {
       if (timer.current) {
@@ -77,7 +73,14 @@ export default function Match({ match }: MatchProps) {
         timer.current = undefined;
       }
     };
-  }, [match, updateMatch]);
+  }, [match.isRunning]);
+
+  // Separate effect to update match duration when local duration changes
+  useEffect(() => {
+    if (match.duration !== duration) {
+      updateMatch(match.id, { duration });
+    }
+  }, [duration, match.duration, match.id, updateMatch]);
 
   return (
     <div
