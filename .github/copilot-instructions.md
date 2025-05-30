@@ -20,6 +20,8 @@ Build a comprehensive badminton match and fee management web application using m
 src/
 ├── components/                # Reusable components
 │   ├── ui/                    # shadcn/ui base components
+│   ├── forms/                 # Form components with react-hook-form
+│   ├── sections/              # Section components (group of ui components)
 │  
 ├── lib/                  # Business logic and utilities
 ├── App.tsx                   # Main layout and state orchestration
@@ -27,13 +29,3 @@ src/
 └── index.css                 # Tailwind directives and global styles
 ```
 
-
-## Performance & Optimization
-
-### Mobile Performance
-- Touch-friendly interaction targets (44px minimum)
-- Optimized images and icons
-- Efficient re-rendering with proper dependencies
-- Smooth animations with CSS transitions
-
-This comprehensive technical guide provides all the implementation details needed to rebuild the badminton fee management application with the exact same functionality, styling, and architecture.

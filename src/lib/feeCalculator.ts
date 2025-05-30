@@ -1,4 +1,6 @@
+import { SIXTY_SECONDS } from "@/constants";
 import type { CostSettings, FeeResult, Match, Player } from "./types";
+import { secondsToMinutes } from "./time";
 
 export function calculateFees(
   matches: Match[],
@@ -13,7 +15,8 @@ export function calculateFees(
   for (const match of matches) {
     const allPlayers = [...match.team1, ...match.team2];
     const matchFee = Math.ceil(
-      (costs.rent * (match.duration / 60)) / allPlayers.length
+      (costs.stage * (secondsToMinutes(match.duration) / SIXTY_SECONDS)) /
+        allPlayers.length
     );
 
     // Track wins for winning team

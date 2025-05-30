@@ -5,7 +5,7 @@ export interface Player {
 }
 
 export interface CostSettings {
-  rent: number; // VND
+  stage: number; // VND
   shuttlecock: number; // VND
 }
 
@@ -15,7 +15,9 @@ export interface Match {
   team2: string[]; // player ids
   shuttlecockUsed: number;
   duration: number; // minutes
-  winner: "team1" | "team2";
+  winner?: "team1" | "team2";
+  isRunning: boolean;
+  createdAt: Date; // ISO date string
 }
 
 export interface FeeResult {
