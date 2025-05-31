@@ -31,7 +31,9 @@ export default function Match({ match }: MatchProps) {
   );
 
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const [duration, setDuration] = React.useState(match.duration || 1);
+  const [duration, setDuration] = React.useState(
+    match.duration || SIXTY_SECONDS
+  );
   const players = getPlayers();
   const team1Players = players.filter((p) => match.team1.includes(p.id));
   const team2Players = players.filter((p) => match.team2.includes(p.id));
@@ -74,14 +76,11 @@ export default function Match({ match }: MatchProps) {
       }
     };
   }, [match.isRunning]);
-
-  // Separate effect to update match duration when local duration changes
   useEffect(() => {
     if (match.duration !== duration) {
       updateMatch(match.id, { duration });
     }
-  }, [duration, match.duration, match.id, updateMatch]);
-
+  }, [match.duration, match.isRunning, duration, updateMatch, match.id]);
   return (
     <div
       className={`relative bg-gradient-to-r p-3 sm:p-4 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-200 shadow-sm hover:shadow-md from-blue-50 to-indigo-50  ring-2 ring-blue-200`}

@@ -9,6 +9,7 @@ import {
 import type { CostSettings, Match } from "@/lib/types";
 import React, { useCallback } from "react";
 import { AppContext } from "./AppContext";
+import { toast } from "sonner";
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -36,7 +37,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateMatch = useCallback(
     (matchId: string, updatedMatch: Partial<Match>) => {
       const existingMatch = matches.find((match) => match.id === matchId);
-      if (!existingMatch) return;
+      if (!existingMatch) {
+        toast.error("Match not found");
+        return;
+      }
+      console.count("updatedMatch");
 
       const newMatch = { ...existingMatch, ...updatedMatch };
       setMatches((prevMatches) =>
