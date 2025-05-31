@@ -82,10 +82,8 @@ export default function Match({ match }: MatchProps) {
     }
   }, [match.duration, match.isRunning, duration, updateMatch, match.id]);
   return (
-    <div
-      className={`relative bg-gradient-to-r p-3 sm:p-4 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-200 shadow-sm hover:shadow-md from-blue-50 to-indigo-50  ring-2 ring-blue-200`}
-    >
-      <div className="flex justify-between items-start gap-2">
+    <div className="relative bg-gradient-to-r p-3 sm:p-4 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-200 shadow-sm hover:shadow-md from-blue-50 to-indigo-50  ring-2 ring-blue-200">
+      <div className="flex justify-between items-start gap-2 flex-col sm:flex-row">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <div className="flex gap-1">
