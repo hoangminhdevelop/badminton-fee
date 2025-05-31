@@ -4,7 +4,7 @@ import * as React from "react";
 
 interface CurrencyInputProps {
   value: string | number;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
   placeholder?: string;
   className?: string;
   label?: string;
@@ -41,7 +41,7 @@ export function CurrencyInput({
 
       // Pass the numeric value back to parent
       const numericValue = parseCurrency(formatted);
-      onChange(numericValue.toString());
+      onChange(numericValue);
     } else {
       setDisplayValue(inputValue);
       onChange(inputValue);
@@ -76,7 +76,7 @@ export function CurrencyInput({
         <Input
           type="text"
           inputMode="numeric"
-          pattern="[0-9]*"
+          pattern="[0-9.]*"
           value={displayValue}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}

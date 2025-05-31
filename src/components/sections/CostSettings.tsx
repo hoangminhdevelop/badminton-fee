@@ -92,7 +92,7 @@ export default function CostSettings() {
             disabled={!isDirty}
             className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-medium py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-sm transition-all duration-200 text-sm sm:text-base h-10 sm:h-11 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-emerald-500 disabled:hover:to-teal-500"
           >
-            Save Settings
+            Lưu cài đặt
           </Button>
         </form>
       </Form>

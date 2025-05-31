@@ -6,11 +6,11 @@ export default function ResetButton() {
   const handleReset = () => {
     if (
       window.confirm(
-        "Are you sure you want to reset all data? This action cannot be undone."
+        "Bạn có chắc chắn muốn xóa tất cả dữ liệu? Tất cả thông tin sẽ bị mất và không thể khôi phục lại."
       )
     ) {
       resetStorage();
-      window.location.reload(); // Reload the page to reflect changes
+      window.location.reload();
     }
   };
   return (

@@ -15,6 +15,7 @@ export function formatCurrency(value: number | string): string {
 
 // Parse formatted currency string to number
 export function parseCurrency(value: string): number {
+  if (!value) return 0;
   const cleaned = value.replace(/\./g, "");
   const parsed = parseFloat(cleaned);
   return isNaN(parsed) ? 0 : parsed;
