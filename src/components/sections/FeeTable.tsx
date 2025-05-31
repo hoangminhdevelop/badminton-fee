@@ -27,8 +27,8 @@ export default function FeeTable() {
           icon={
             <DollarSign className="w-12 h-12 sm:w-16 sm:h-16 text-amber-400" />
           }
-          title="Setup Required"
-          description="Please configure cost settings first to calculate fees"
+          title="Yêu cầu cài đặt chi phí"
+          description="Vui lòng cài đặt chi phí thuê sân và cầu trước khi tính toán bảng phí."
           className="text-amber-800"
         />
       </div>
@@ -45,9 +45,9 @@ export default function FeeTable() {
             <div className="text-center py-8">
               <div className="text-slate-500">
                 <Globe className="w-10 h-10 mx-auto mb-3 text-slate-300" />
-                <p className="font-medium text-sm">No fee data available</p>
+                <p className="font-medium text-sm">Chưa có dữ liệu</p>
                 <p className="text-xs mt-1">
-                  Add players and matches to see calculations
+                  Bấm Reload để tính toán lại phí cho các trận đấu đã có
                 </p>
               </div>
             </div>
