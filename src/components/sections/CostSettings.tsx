@@ -12,6 +12,7 @@ import { useAppContext } from "@/hooks/useAppContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as zod from "zod";
+import { toast } from "sonner";
 
 const costSettingsSchema = zod.object({
   stage: zod.coerce
@@ -39,6 +40,7 @@ export default function CostSettings() {
 
   const onSubmit = (data: CostSettingsForm) => {
     updateCost(data);
+    toast.success("Cài đặt chi phí đã được lưu thành công!");
     // Reset form dirty state after successful save
     form.reset(data);
   };

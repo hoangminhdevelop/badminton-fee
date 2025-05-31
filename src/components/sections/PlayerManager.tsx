@@ -1,8 +1,9 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { Plus, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addPlayer, getPlayers } from "@/lib/storage";
-import { Plus, User, Users } from "lucide-react";
-import { useState } from "react";
 import PlayerTag from "../PlayerTag";
 
 export default function PlayerManager() {
@@ -12,6 +13,7 @@ export default function PlayerManager() {
   const handleAddPlayer = () => {
     if (name.trim()) {
       addPlayer(name.trim());
+      toast.success("Thêm người chơi thành công!");
       setName("");
     }
   };

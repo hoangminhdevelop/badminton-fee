@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getPlayers } from "@/lib/storage";
 import { calculateFees } from "@/lib/feeCalculator";
+import { Checkbox } from "../ui/checkbox";
 
 export default function FeeTable() {
   const { cost, matches } = useAppContext();
@@ -63,7 +64,8 @@ export default function FeeTable() {
                       <div className="flex items-center gap-3 mb-3">
                         <div>
                           <h3 className="font-semibold text-slate-800">
-                            {f.name}
+                            <Checkbox className="mr-2" />
+                            <span>{f.name}</span>
                           </h3>
                         </div>
                       </div>

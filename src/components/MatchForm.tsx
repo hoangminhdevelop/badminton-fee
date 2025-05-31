@@ -28,6 +28,7 @@ import { useAppContext } from "@/hooks/useAppContext";
 import type { Match } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { minutesToSeconds } from "@/lib/time";
+import { toast } from "sonner";
 
 const matchSchema = z.object({
   team1: z
@@ -91,6 +92,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
         ...data,
       };
       updateMatch(defaultValues.id, updatedMatchData);
+      toast.success("Cập nhật trận đấu thành công!");
     }
 
     // Add new match processing
@@ -103,6 +105,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
         createdAt: new Date(),
       };
       addNewMatch(matchData);
+      toast.success("Tạo trận đấu mới thành công!");
     }
     // Close the dialog and reset the form
     setShow(false);
