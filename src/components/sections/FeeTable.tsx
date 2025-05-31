@@ -41,7 +41,7 @@ export default function FeeTable() {
       <Button onClick={reloadFeeTable}>Reload</Button>
       {/* Mobile Card Layout */}
       <div className="block ">
-        <div className="p-4 space-y-4">
+        <div className="py-2 space-y-4">
           {fees.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-slate-500">
@@ -59,7 +59,7 @@ export default function FeeTable() {
                   f.matches > 0 && (
                     <div
                       key={f.playerId}
-                      className="bg-slate-50 rounded-lg p-4 border border-slate-200"
+                      className="bg-slate-50 rounded-lg p-2 border border-slate-200"
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div>

@@ -47,10 +47,7 @@ function App() {
           <div className="lg:col-span-8 space-y-4 sm:space-y-6">
             {/* Match Management Section */}
             <SectionCard title="Trận đấu">
-              <>
-                <MatchForm />
-                <MatchList />
-              </>
+              <MatchList />
             </SectionCard>
 
             {/* Fee Calculator Section */}

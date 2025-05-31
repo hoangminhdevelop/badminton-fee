@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppContext } from "@/hooks/useAppContext";
 import { Table } from "lucide-react";
 import MatchComponent from "../Match";
+import MatchForm from "../MatchForm";
 
 export default function MatchList() {
   const { matches } = useAppContext();
@@ -13,11 +13,12 @@ export default function MatchList() {
   });
 
   return (
-    <Card className="w-full max-w-none sm:mx-auto">
-      <CardHeader className="pb-3 sm:pb-6">
-        <CardTitle className="text-lg sm:text-xl">Danh sách trận:</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+    <div className="w-full max-w-none sm:mx-auto">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl">Danh sách trận:</h3>
+        <MatchForm />
+      </div>
+      <div className="pt-0">
         <div className="space-y-3">
           {sortedMatches.map((match) => (
             <MatchComponent key={match.id + match.duration} match={match} />
@@ -34,7 +35,7 @@ export default function MatchList() {
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

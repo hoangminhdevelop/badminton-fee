@@ -41,7 +41,11 @@ const matchSchema = z.object({
     .max(2, "Tối đa là 2 người"),
   shuttlecockUsed: z.coerce.number().min(0),
   duration: z.coerce.number().min(1).transform(minutesToSeconds),
-  winner: z.enum(["team1", "team2"]).optional(),
+  winner: z
+    .enum(["team1", "team2"], {
+      message: "Phải chọn đội thắng",
+    })
+    .optional(),
   isShareShuttlecockUsed: z.boolean(),
 });
 

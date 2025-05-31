@@ -41,7 +41,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         toast.error("Match not found");
         return;
       }
-      console.count("updatedMatch");
 
       const newMatch = { ...existingMatch, ...updatedMatch };
       setMatches((prevMatches) =>
