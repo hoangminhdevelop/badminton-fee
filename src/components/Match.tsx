@@ -9,8 +9,8 @@ import {
   Pause,
   Play,
   Rabbit,
-  Star,
   Swords,
+  VolleyballIcon,
   X,
 } from "lucide-react";
 import React, { useEffect } from "react";
@@ -104,7 +104,7 @@ export default function Match({ match }: MatchProps) {
               {team2Players.map((p) => (
                 <Badge
                   key={p.id}
-                  className={cn("px-2 py-1 rounded-sm", {
+                  className={cn("p-1 rounded-sm", {
                     "bg-amber-400 text-black": isTeam2Winner,
                   })}
                 >
@@ -115,11 +115,11 @@ export default function Match({ match }: MatchProps) {
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600">
             <span className="flex items-center gap-1">
-              <Star className="w-3 h-3" />
-              {match.shuttlecockUsed} shuttlecocks
+              <VolleyballIcon size={16} />
+              {match.shuttlecockUsed}
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
+              <Clock size={16} />
               {`${secondsToMinutes(duration).toString().padStart(2, "0")}:${(
                 duration % SIXTY_SECONDS
               )
@@ -128,16 +128,16 @@ export default function Match({ match }: MatchProps) {
             </span>
             {match.winner && (
               <span className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3 text-green-600" />
+                <CheckCircle size={16} className="text-green-600" />
                 Winner: {match.winner === "team1" ? "Team 1" : "Team 2"}
               </span>
             )}
-            {!match.betShuttlecockUsed && (
-              <span className="flex items-center gap-1">
-                <Rabbit size={16} />
-              </span>
+            {match.betShuttlecockUsed ? (
+              <Swords size={16} />
+            ) : (
+              <Rabbit size={16} />
             )}
-            {match.applyStageFee && <NotebookPen />}
+            {match.applyStageFee && <NotebookPen size={16} />}
           </div>
         </div>
 
