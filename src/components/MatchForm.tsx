@@ -69,10 +69,14 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
       ? {
           ...defaultValues,
           duration: secondsToMinutes(defaultValues.duration),
+          betShuttlecockUsed:
+            typeof defaultValues.betShuttlecockUsed === "boolean"
+              ? defaultValues.betShuttlecockUsed
+              : false,
           applyStageFee:
             typeof defaultValues.applyStageFee === "boolean"
               ? defaultValues.applyStageFee
-              : true,
+              : false,
         }
       : {
           team1: [],
@@ -151,7 +155,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
         <DialogContent className="w-[95vw] max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
           <DialogHeader className="pb-3 sm:pb-4">
             <DialogTitle className="text-lg sm:text-xl">
-              Tạo trận đấu mới
+              {isUpdateForm ? "Cập nhật trận đấu" : " Tạo trận đấu mới"}
             </DialogTitle>
             <DialogClose onClick={handleClose} />
           </DialogHeader>
