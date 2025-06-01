@@ -3,11 +3,11 @@ import { toast } from "sonner";
 import { Plus, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { addPlayer, getPlayers } from "@/lib/storage";
+import { addPlayer, getPlayers, removePlayer } from "@/lib/storage";
 import PlayerTag from "../PlayerTag";
 
 export default function PlayerManager() {
-  const players = getPlayers();
+  const [players, setPlayers] = useState(getPlayers());
   const [name, setName] = useState("");
 
   const handleAddPlayer = () => {
@@ -16,6 +16,12 @@ export default function PlayerManager() {
       toast.success("Thêm người chơi thành công!");
       setName("");
     }
+  };
+
+  const handleRemovePlayer = (id: string) => {
+    removePlayer(id);
+    toast.success("Đã xóa người chơi thành công!");
+    setPlayers(getPlayers());
   };
 
   return (
@@ -53,7 +59,11 @@ export default function PlayerManager() {
             </h4>
             <div className="flex flex-wrap gap-2">
               {players.map((player) => (
-                <PlayerTag key={player.id} player={player} />
+                <PlayerTag
+                  key={player.id}
+                  player={player}
+                  onRemove={() => handleRemovePlayer(player.id)}
+                />
               ))}
             </div>
           </div>

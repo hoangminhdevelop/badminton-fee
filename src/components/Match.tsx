@@ -2,17 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getPlayers } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle,
-  Clock,
-  NotebookPen,
-  Pause,
-  Play,
-  Rabbit,
-  Swords,
-  VolleyballIcon,
-  X,
-} from "lucide-react";
+import { Swords } from "lucide-react";
 import React, { useEffect } from "react";
 import type { Match as MatchType } from "../lib/types";
 import { Badge } from "./ui/badge";
@@ -113,31 +103,25 @@ export default function Match({ match }: MatchProps) {
               ))}
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600">
-            <span className="flex items-center gap-1">
-              <VolleyballIcon size={16} />
-              {match.shuttlecockUsed}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock size={16} />
+          <div className="flex flex-col">
+            <p className="flex items-center gap-1">
+              <b>Số cầu: </b> {match.shuttlecockUsed}
+            </p>
+            <p className="flex items-center gap-1">
+              <b>Thời gian:</b>
               {`${secondsToMinutes(duration).toString().padStart(2, "0")}:${(
                 duration % SIXTY_SECONDS
               )
                 .toString()
-                .padStart(2, "0")}`}
-            </span>
-            {match.winner && (
-              <span className="flex items-center gap-1">
-                <CheckCircle size={16} className="text-green-600" />
-                Winner: {match.winner === "team1" ? "Team 1" : "Team 2"}
-              </span>
-            )}
-            {match.betShuttlecockUsed ? (
-              <Swords size={16} />
-            ) : (
-              <Rabbit size={16} />
-            )}
-            {match.applyStageFee && <NotebookPen size={16} />}
+                .padStart(2, "0")}`}{" "}
+              phút
+            </p>
+            <p>
+              <b>Độ cầu: </b> {match.betShuttlecockUsed ? "Có" : "Không"}
+            </p>
+            <p>
+              <b>Tiền sân: </b> {match.applyStageFee ? "Có" : "Không"}
+            </p>
           </div>
         </div>
 
@@ -149,19 +133,18 @@ export default function Match({ match }: MatchProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 hover:bg-red-50"
                 onClick={stopMatch}
               >
-                <Pause className="h-4 w-4" />
+                Dừng
               </Button>
             ) : (
               <Button
-                variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-50"
+                className="bg-green-500 hover:bg-green-600 hover:bg-green-50"
                 onClick={startMatch}
               >
-                <Play className="h-4 w-4" />
+                Bắt đầu
               </Button>
             )}
           </div>
@@ -173,14 +156,13 @@ export default function Match({ match }: MatchProps) {
 
           {/* Delete Button */}
           <Button
-            variant="ghost"
             size="sm"
-            className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg p-1.5 sm:p-2"
+            className="bg-red-500 hover:bg-red-600 rounded-lg p-1.5 sm:p-2"
             onClick={() => {
               removeMatch(match.id);
             }}
           >
-            <X className="h-3 w-3 sm:h-4 sm:w-4" />
+            Xóa
           </Button>
         </div>
       </div>

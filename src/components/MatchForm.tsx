@@ -136,9 +136,8 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
     <>
       {isUpdateForm ? (
         <Button
-          variant="ghost"
           size="sm"
-          className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 py-1.5"
+          className="bg-blue-500 hover:bg-blue-600 hover:bg-blue-50 rounded-lg px-3 py-1.5"
           onClick={() => setShow(true)}
         >
           Edit

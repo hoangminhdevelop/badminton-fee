@@ -33,8 +33,10 @@ export function addPlayer(playerName: string) {
   localStorage.setItem(PLAYERS_KEY_STORAGE, JSON.stringify(players));
 }
 
-export function removePlayer(players: Player[]) {
-  localStorage.setItem(PLAYERS_KEY_STORAGE, JSON.stringify(players));
+export function removePlayer(id: string) {
+  const players = getPlayers();
+  const updatedPlayers = players.filter((p) => p.id !== id);
+  localStorage.setItem(PLAYERS_KEY_STORAGE, JSON.stringify(updatedPlayers));
 }
 
 export function saveNewMatchToStorage(match: Match) {
