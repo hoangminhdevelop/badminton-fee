@@ -105,6 +105,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
         ...defaultValues,
         ...data,
       };
+      console.log("updatedMatchData", updatedMatchData);
       updateMatch(defaultValues.id, updatedMatchData);
       toast.success("Cập nhật trận đấu thành công!");
     }

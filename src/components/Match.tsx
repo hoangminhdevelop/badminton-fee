@@ -167,7 +167,9 @@ export default function Match({ match }: MatchProps) {
           </div>
 
           {/* Edit Button */}
-          {!isPlaying && <MatchForm defaultValues={match} />}
+          {!isPlaying && (
+            <MatchForm key={JSON.stringify(match)} defaultValues={match} />
+          )}
 
           {/* Delete Button */}
           <Button
