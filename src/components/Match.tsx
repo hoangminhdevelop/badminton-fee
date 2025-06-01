@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import {
   CheckCircle,
   Clock,
+  NotebookPen,
   Pause,
   Play,
   Rabbit,
@@ -131,11 +132,12 @@ export default function Match({ match }: MatchProps) {
                 Winner: {match.winner === "team1" ? "Team 1" : "Team 2"}
               </span>
             )}
-            {match.isShareShuttlecockUsed && (
+            {!match.betShuttlecockUsed && (
               <span className="flex items-center gap-1">
                 <Rabbit size={16} />
               </span>
             )}
+            {match.applyStageFee && <NotebookPen />}
           </div>
         </div>
 

@@ -14,7 +14,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import PlayerTag from "./PlayerTag";
-import { Checkbox } from "./ui/checkbox";
 import {
   Form,
   FormControl,
@@ -27,8 +26,9 @@ import {
 import { useAppContext } from "@/hooks/useAppContext";
 import type { Match } from "@/lib/types";
 import { v4 as uuid } from "uuid";
-import { minutesToSeconds } from "@/lib/time";
+import { minutesToSeconds, secondsToMinutes } from "@/lib/time";
 import { toast } from "sonner";
+import { Switch } from "./ui/switch";
 
 const matchSchema = z.object({
   team1: z
@@ -46,7 +46,8 @@ const matchSchema = z.object({
       message: "Phải chọn đội thắng",
     })
     .optional(),
-  isShareShuttlecockUsed: z.boolean(),
+  betShuttlecockUsed: z.boolean(),
+  applyStageFee: z.boolean(),
 });
 
 type MatchForm = z.infer<typeof matchSchema>;
@@ -67,14 +68,19 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
     defaultValues: isUpdateForm
       ? {
           ...defaultValues,
-          duration: Math.ceil((defaultValues.duration || 1) / 60),
+          duration: secondsToMinutes(defaultValues.duration),
+          applyStageFee:
+            typeof defaultValues.applyStageFee === "boolean"
+              ? defaultValues.applyStageFee
+              : true,
         }
       : {
           team1: [],
           team2: [],
           shuttlecockUsed: 0,
           duration: 1,
-          isShareShuttlecockUsed: false,
+          betShuttlecockUsed: false,
+          applyStageFee: false,
         },
   });
 
@@ -398,23 +404,46 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="isShareShuttlecockUsed"
+                  name="betShuttlecockUsed"
                   render={({ field }) => {
                     return (
                       <FormItem>
                         <FormControl>
                           <div className="flex items-center">
-                            <Checkbox
-                              id="isShareShuttlecockUsed"
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />{" "}
                             <FormLabel
-                              htmlFor="isShareShuttlecockUsed"
+                              htmlFor="betShuttlecockUsed"
                               className="ml-2"
                             >
-                              Chia tiền cầu cho tất cả người chơi
+                              Độ tiền cầu:
                             </FormLabel>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="applyStageFee"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex items-center">
+                            <FormLabel
+                              htmlFor="betShuttlecockUsed"
+                              className="ml-2"
+                            >
+                              Tính tiền sân:
+                            </FormLabel>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
                           </div>
                         </FormControl>
                       </FormItem>

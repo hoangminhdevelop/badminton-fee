@@ -18,7 +18,8 @@ export interface Match {
   winner?: "team1" | "team2";
   isRunning: boolean;
   createdAt: Date; // ISO date string
-  isShareShuttlecockUsed: boolean; // true if shuttlecock is shared
+  betShuttlecockUsed: boolean; // true if shuttlecock is shared
+  applyStageFee: boolean; // true if stage fee is applied
 }
 
 export interface FeeResult {

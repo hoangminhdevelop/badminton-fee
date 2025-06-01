@@ -14,10 +14,17 @@ export function calculateFees(
 
   for (const match of matches) {
     const allPlayers = [...match.team1, ...match.team2];
-    const matchFee = Math.ceil(
-      (costs.stage * (secondsToMinutes(match.duration) / SIXTY_SECONDS)) /
-        allPlayers.length
-    );
+
+    const applyStageFee =
+      typeof match.applyStageFee === "boolean" ? match.applyStageFee : true;
+
+    // Only calculate fees if applyStageFee is true
+    const matchFee = !applyStageFee
+      ? 0
+      : Math.ceil(
+          (costs.stage * (secondsToMinutes(match.duration) / SIXTY_SECONDS)) /
+            allPlayers.length
+        );
 
     // Track wins for winning team
     const winningTeam = match.winner === "team1" ? match.team1 : match.team2;
@@ -35,12 +42,13 @@ export function calculateFees(
       }
     }
 
-    const isShare = match.isShareShuttlecockUsed;
+    const isBet = match.betShuttlecockUsed;
     const loser = match.winner === "team1" ? match.team2 : match.team1;
     const allPlayersInMatch = [...match.team1, ...match.team2];
 
     if (match.shuttlecockUsed > 0) {
-      const shareGroup = isShare ? allPlayersInMatch : loser;
+      // If no team won or isShare is true, share the shuttlecock cost among all players
+      const shareGroup = isBet ? loser : allPlayersInMatch;
       if (shareGroup.length > 0) {
         const shuttleFee = Math.ceil(
           (costs.shuttlecock * match.shuttlecockUsed) / shareGroup.length
