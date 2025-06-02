@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import type { Match as MatchType } from "../lib/types";
 import { Badge } from "./ui/badge";
 import MatchForm from "./MatchForm";
-import { SIXTY_SECONDS } from "@/constants";
+import { SIXTY } from "@/constants";
 import { secondsToMinutes } from "@/lib/time";
 
 interface MatchProps {
@@ -22,9 +22,7 @@ export default function Match({ match }: MatchProps) {
   );
 
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const [duration, setDuration] = React.useState(
-    match.duration || SIXTY_SECONDS
-  );
+  const [duration, setDuration] = React.useState(match.duration || SIXTY);
   const players = getPlayers();
   const team1Players = players.filter((p) => match.team1.includes(p.id));
   const team2Players = players.filter((p) => match.team2.includes(p.id));
@@ -82,7 +80,7 @@ export default function Match({ match }: MatchProps) {
                 <Badge
                   key={p.id}
                   className={cn("px-2 py-1 rounded-sm", {
-                    "bg-amber-400 text-black": isTeam1Winner,
+                    "bg-amber-400 hover:bg-amber-500 text-black": isTeam1Winner,
                   })}
                 >
                   {p.name}
@@ -95,7 +93,7 @@ export default function Match({ match }: MatchProps) {
                 <Badge
                   key={p.id}
                   className={cn("p-1 rounded-sm", {
-                    "bg-amber-400 text-black": isTeam2Winner,
+                    "bg-amber-400 hover:bg-amber-500 text-black": isTeam2Winner,
                   })}
                 >
                   {p.name}
@@ -110,7 +108,7 @@ export default function Match({ match }: MatchProps) {
             <p className="flex items-center gap-1">
               <b>Thời gian:</b>
               {`${secondsToMinutes(duration).toString().padStart(2, "0")}:${(
-                duration % SIXTY_SECONDS
+                duration % SIXTY
               )
                 .toString()
                 .padStart(2, "0")}`}{" "}
@@ -133,7 +131,7 @@ export default function Match({ match }: MatchProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 hover:bg-red-50"
+                className="bg-red-500 hover:bg-red-600 text-white hover:text-white"
                 onClick={stopMatch}
               >
                 Dừng
@@ -141,7 +139,7 @@ export default function Match({ match }: MatchProps) {
             ) : (
               <Button
                 size="sm"
-                className="bg-green-500 hover:bg-green-600 hover:bg-green-50"
+                className="bg-green-500 hover:bg-green-600"
                 onClick={startMatch}
               >
                 Bắt đầu
@@ -155,15 +153,17 @@ export default function Match({ match }: MatchProps) {
           )}
 
           {/* Delete Button */}
-          <Button
-            size="sm"
-            className="bg-red-500 hover:bg-red-600 rounded-lg p-1.5 sm:p-2"
-            onClick={() => {
-              removeMatch(match.id);
-            }}
-          >
-            Xóa
-          </Button>
+          {!isPlaying && (
+            <Button
+              size="sm"
+              className="bg-red-500 hover:bg-red-600 rounded-lg p-1.5 sm:p-2"
+              onClick={() => {
+                removeMatch(match.id);
+              }}
+            >
+              Xóa
+            </Button>
+          )}
         </div>
       </div>
     </div>

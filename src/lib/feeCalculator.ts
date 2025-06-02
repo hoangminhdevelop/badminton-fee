@@ -1,6 +1,8 @@
-import { SIXTY_SECONDS } from "@/constants";
+import { SIXTY } from "@/constants";
 import type { CostSettings, FeeResult, Match, Player } from "./types";
 import { secondsToMinutes } from "./time";
+import { Decimal } from "decimal.js";
+import { roundMoney } from "./currency";
 
 export function calculateFees(
   matches: Match[],
@@ -8,54 +10,64 @@ export function calculateFees(
   costs: CostSettings
 ): FeeResult[] {
   const playerMap = new Map(
-    players.map((p) => [p.id, { ...p, matches: 0, wins: 0, total: 0 }])
+    players.map((p) => [
+      p.id,
+      {
+        ...p,
+        matches: 0,
+        wins: 0,
+        stageFee: new Decimal(0),
+        shuttlecockFee: new Decimal(0),
+      },
+    ])
   );
   if (!costs) return [];
 
   for (const match of matches) {
     const allPlayers = [...match.team1, ...match.team2];
-
-    const applyStageFee =
-      typeof match.applyStageFee === "boolean" ? match.applyStageFee : true;
+    const winners =
+      !!match.winner && match.winner === "team1" ? match.team1 : match.team2;
+    const losers =
+      !!match.winner && match.winner === "team1" ? match.team2 : match.team1;
 
     // Only calculate fees if applyStageFee is true
-    const matchFee = !applyStageFee
-      ? 0
-      : Math.ceil(
-          (costs.stage * (secondsToMinutes(match.duration) / SIXTY_SECONDS)) /
-            allPlayers.length
-        );
+    const moneyForPerMinute = new Decimal(costs.stage).div(SIXTY);
+
+    const gameFee = match.applyStageFee
+      ? new Decimal(secondsToMinutes(match.duration)).mul(moneyForPerMinute)
+      : new Decimal(0);
+
+    const gameFeePerPlayer = gameFee.div(allPlayers.length);
 
     // Track wins for winning team
-    const winningTeam = match.winner === "team1" ? match.team1 : match.team2;
 
     for (const pid of allPlayers) {
       const p = playerMap.get(pid);
       if (p) {
         p.matches += 1;
-        p.total += matchFee;
+        p.stageFee = p.stageFee.plus(gameFeePerPlayer);
 
         // Add win if player is on winning team
-        if (winningTeam.includes(pid)) {
+        if (winners.includes(pid)) {
           p.wins += 1;
         }
       }
     }
 
-    const isBet = match.betShuttlecockUsed;
-    const loser = match.winner === "team1" ? match.team2 : match.team1;
-    const allPlayersInMatch = [...match.team1, ...match.team2];
+    const isBet = !!match.betShuttlecockUsed && match.shuttlecockUsed;
 
-    if (match.shuttlecockUsed > 0) {
-      // If no team won or isShare is true, share the shuttlecock cost among all players
-      const shareGroup = isBet ? loser : allPlayersInMatch;
-      if (shareGroup.length > 0) {
-        const shuttleFee = Math.ceil(
-          (costs.shuttlecock * match.shuttlecockUsed) / shareGroup.length
-        );
-        for (const pid of shareGroup) {
-          const player = playerMap.get(pid);
-          if (player) player.total += shuttleFee;
+    // If no team won or isShare is true, share the shuttlecock cost among all players
+    const payForShuttlecocks = isBet ? losers : allPlayers;
+
+    if (payForShuttlecocks.length > 0) {
+      const shuttleFee = new Decimal(costs.shuttlecock)
+        .mul(match.shuttlecockUsed)
+        .div(payForShuttlecocks.length);
+
+      for (const pid of payForShuttlecocks) {
+        const player = playerMap.get(pid);
+        if (player) {
+          player.shuttlecockFee = player.shuttlecockFee.plus(shuttleFee);
         }
       }
     }
@@ -65,6 +77,7 @@ export function calculateFees(
     name: p.name,
     matches: p.matches,
     wins: p.wins,
-    total: Math.ceil(p.total / 1000) * 1000, // round up to nearest 1,000 VND
+    stateFee: roundMoney(p.stageFee.toNumber()),
+    shuttlecockFee: roundMoney(p.shuttlecockFee.toNumber()),
   }));
 }

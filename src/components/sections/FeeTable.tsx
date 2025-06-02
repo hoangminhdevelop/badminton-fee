@@ -4,21 +4,21 @@ import { EmptyState } from "../EmptyState";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/hooks/useAppContext";
-import { getPlayers } from "@/lib/storage";
 import { calculateFees } from "@/lib/feeCalculator";
 import { Checkbox } from "../ui/checkbox";
+import { roundMoney } from "@/lib/currency";
 
 export default function FeeTable() {
-  const { cost, matches } = useAppContext();
-
-  const player = getPlayers();
+  const { cost, matches, players } = useAppContext();
 
   const [fees, setFees] = useState<FeeResult[]>(
-    cost ? calculateFees(matches, player, cost) : []
+    cost ? calculateFees(matches, players, cost) : []
   );
 
+  console.log("fees", fees);
+
   const reloadFeeTable = () => {
-    setFees(cost ? calculateFees(matches, player, cost) : []);
+    setFees(cost ? calculateFees(matches, players, cost) : []);
   };
 
   if (!cost) {
@@ -69,7 +69,7 @@ export default function FeeTable() {
                           </h3>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-3 text-center">
+                      <div className="grid grid-cols-5 gap-2 text-center">
                         <div>
                           <div className="text-xs text-slate-600 mb-1">
                             Số trận
@@ -88,10 +88,28 @@ export default function FeeTable() {
                         </div>
                         <div>
                           <div className="text-xs text-slate-600 mb-1">
+                            Phí sân (VND)
+                          </div>
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                            {f.stateFee.toLocaleString()}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 mb-1">
+                            Phí cầu (VND)
+                          </div>
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                            {f.shuttlecockFee.toLocaleString()}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-xs text-slate-600 mb-1">
                             Phí (VND)
                           </div>
                           <div className="font-semibold text-slate-900 text-sm">
-                            {f.total.toLocaleString()}
+                            {roundMoney(
+                              f.stateFee + f.shuttlecockFee
+                            ).toLocaleString()}
                           </div>
                         </div>
                       </div>
@@ -105,7 +123,9 @@ export default function FeeTable() {
                   <h3 className="font-bold text-amber-800">Total Summary</h3>
                 </div>
                 <div className="font-bold text-amber-800 text-base">
-                  {fees.reduce((sum, f) => sum + f.total, 0).toLocaleString()}
+                  {fees
+                    .reduce((sum, f) => sum + f.stateFee + f.shuttlecockFee, 0)
+                    .toLocaleString()}
                 </div>
               </div>
             </>

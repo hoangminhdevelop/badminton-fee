@@ -15,7 +15,7 @@ export interface Match {
   team2: string[]; // player ids
   shuttlecockUsed: number;
   duration: number; // in seconds
-  winner?: "team1" | "team2";
+  winner?: "team1" | "team2" | null;
   isRunning: boolean;
   createdAt: Date; // ISO date string
   betShuttlecockUsed: boolean; // true if shuttlecock is shared
@@ -26,6 +26,7 @@ export interface FeeResult {
   playerId: string;
   name: string;
   matches: number;
+  stateFee: number;
+  shuttlecockFee: number;
   wins: number;
-  total: number;
 }

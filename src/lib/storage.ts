@@ -19,24 +19,8 @@ export function getPlayers(): Player[] {
   return players ? JSON.parse(players) : [];
 }
 
-export function addPlayer(playerName: string) {
-  const player = {
-    id: crypto.randomUUID(),
-    name: playerName.trim(),
-  };
-
-  const players = getPlayers();
-  if (players.some((p) => p.name === player.name)) {
-    throw new Error("Player with this name already exists");
-  }
-  players.push(player);
+export function setPlayersToStorage(players: Player[]) {
   localStorage.setItem(PLAYERS_KEY_STORAGE, JSON.stringify(players));
-}
-
-export function removePlayer(id: string) {
-  const players = getPlayers();
-  const updatedPlayers = players.filter((p) => p.id !== id);
-  localStorage.setItem(PLAYERS_KEY_STORAGE, JSON.stringify(updatedPlayers));
 }
 
 export function saveNewMatchToStorage(match: Match) {

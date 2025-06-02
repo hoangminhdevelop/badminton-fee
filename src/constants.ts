@@ -1,1 +1,1 @@
-export const SIXTY_SECONDS = 60;
+export const SIXTY = 60;

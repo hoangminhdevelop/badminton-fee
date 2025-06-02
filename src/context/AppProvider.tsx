@@ -1,12 +1,14 @@
 import {
   getCosts,
   getMatchesInStorage,
+  getPlayers,
   removeMatchFromStorage,
   saveNewMatchToStorage,
   setCostsToStorage,
+  setPlayersToStorage,
   updateMatchInStorage,
 } from "@/lib/storage";
-import type { CostSettings, Match } from "@/lib/types";
+import type { CostSettings, Match, Player } from "@/lib/types";
 import React, { useCallback } from "react";
 import { AppContext } from "./AppContext";
 import { toast } from "sonner";
@@ -14,8 +16,9 @@ import { toast } from "sonner";
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [matches, setMatches] = React.useState(getMatchesInStorage());
   const [cost, setCost] = React.useState(getCosts());
+  const [players, setPlayers] = React.useState<Player[]>(getPlayers());
+  const [matches, setMatches] = React.useState(getMatchesInStorage());
 
   const updateCost = (newCost: CostSettings) => {
     setCost(newCost);
@@ -51,6 +54,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     [matches]
   );
 
+  const addNewPlayer = (newPlayer: Player) => {
+    const existedPlayer = players.find(
+      (player) => player.name === newPlayer.name
+    );
+    if (existedPlayer) {
+      toast.error("Người chơi đã tồn tại");
+      return;
+    }
+
+    const newPlayersList = [...players, newPlayer];
+    setPlayers(newPlayersList);
+    setPlayersToStorage(newPlayersList);
+  };
+
+  const removePlayer = (playerId: string) => {
+    const newPlayersList = players.filter((player) => player.id !== playerId);
+    setPlayers(newPlayersList);
+    setPlayersToStorage(newPlayersList);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -60,6 +83,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         updateMatch,
         cost,
         updateCost,
+        players,
+        addNewPlayer,
+        removePlayer,
       }}
     >
       {children}

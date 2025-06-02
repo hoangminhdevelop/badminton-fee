@@ -1,4 +1,4 @@
-import type { CostSettings, Match } from "@/lib/types";
+import type { CostSettings, Match, Player } from "@/lib/types";
 import React from "react";
 
 export type AppContextProps = {
@@ -11,6 +11,11 @@ export type AppContextProps = {
   addNewMatch: (match: Match) => void;
   removeMatch: (matchId: string) => void;
   updateMatch: (matchId: string, updatedMatch: Partial<Match>) => void;
+
+  // Players
+  players: Player[];
+  addNewPlayer: (player: Player) => void;
+  removePlayer: (playerId: string) => void;
 };
 
 export const AppContext = React.createContext<AppContextProps | null>(null);

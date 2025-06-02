@@ -3,16 +3,19 @@ import { toast } from "sonner";
 import { Plus, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { addPlayer, getPlayers, removePlayer } from "@/lib/storage";
 import PlayerTag from "../PlayerTag";
+import { useAppContext } from "@/hooks/useAppContext";
 
 export default function PlayerManager() {
-  const [players, setPlayers] = useState(getPlayers());
+  const { players, addNewPlayer, removePlayer } = useAppContext();
   const [name, setName] = useState("");
 
   const handleAddPlayer = () => {
     if (name.trim()) {
-      addPlayer(name.trim());
+      addNewPlayer({
+        id: crypto.randomUUID(),
+        name: name.trim(),
+      });
       toast.success("Thêm người chơi thành công!");
       setName("");
     }
@@ -21,7 +24,6 @@ export default function PlayerManager() {
   const handleRemovePlayer = (id: string) => {
     removePlayer(id);
     toast.success("Đã xóa người chơi thành công!");
-    setPlayers(getPlayers());
   };
 
   return (

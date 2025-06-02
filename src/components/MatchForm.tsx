@@ -45,6 +45,7 @@ const matchSchema = z.object({
     .enum(["team1", "team2"], {
       message: "Phải chọn đội thắng",
     })
+    .nullable()
     .optional(),
   betShuttlecockUsed: z.boolean(),
   applyStageFee: z.boolean(),
@@ -83,6 +84,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
           team2: [],
           shuttlecockUsed: 0,
           duration: 1,
+          winner: null,
           betShuttlecockUsed: false,
           applyStageFee: false,
         },
@@ -137,7 +139,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
       {isUpdateForm ? (
         <Button
           size="sm"
-          className="bg-blue-500 hover:bg-blue-600 hover:bg-blue-50 rounded-lg px-3 py-1.5"
+          className="bg-blue-500 hover:bg-blue-600 rounded-lg px-3 py-1.5"
           onClick={() => setShow(true)}
         >
           Edit
@@ -372,38 +374,42 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                   control={form.control}
                   name="winner"
                   defaultValue={undefined}
-                  render={({ field: { value, onChange } }) => (
-                    <FormItem>
-                      <FormLabel>Đội thắng</FormLabel>
-                      <FormControl>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge
-                            className="px-4 py-2"
-                            variant={
-                              value === "team1" ? "default" : "secondary"
-                            }
-                            onClick={() =>
-                              onChange(value === "team1" ? "" : "team1")
-                            }
-                          >
-                            Team 1
-                          </Badge>
-                          <Badge
-                            className="px-4 py-2"
-                            variant={
-                              value === "team2" ? "default" : "secondary"
-                            }
-                            onClick={() =>
-                              onChange(value === "team2" ? "" : "team2")
-                            }
-                          >
-                            Team 2
-                          </Badge>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field: { value, onChange } }) => {
+                    const isTeam1Winner = value === "team1";
+                    const isTeam2Winner = value === "team2";
+
+                    console.log("isTeam1Winner", isTeam1Winner);
+                    console.log("value", value);
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Đội thắng</FormLabel>
+                        <FormControl>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge
+                              className="px-4 py-2"
+                              variant={isTeam1Winner ? "default" : "secondary"}
+                              onClick={() =>
+                                onChange(isTeam1Winner ? null : "team1")
+                              }
+                            >
+                              Team 1
+                            </Badge>
+                            <Badge
+                              className="px-4 py-2"
+                              variant={isTeam2Winner ? "default" : "secondary"}
+                              onClick={() =>
+                                onChange(isTeam2Winner ? null : "team2")
+                              }
+                            >
+                              Team 2
+                            </Badge>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
@@ -418,7 +424,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                               htmlFor="betShuttlecockUsed"
                               className="ml-2"
                             >
-                              Độ tiền cầu:
+                              Độ tiền cầu:&nbsp;
                             </FormLabel>
                             <Switch
                               checked={field.value}
@@ -442,7 +448,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                               htmlFor="betShuttlecockUsed"
                               className="ml-2"
                             >
-                              Tính tiền sân:
+                              Tính tiền sân:&nbsp;
                             </FormLabel>
                             <Switch
                               checked={field.value}

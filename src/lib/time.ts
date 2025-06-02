@@ -1,12 +1,12 @@
-import { SIXTY_SECONDS } from "@/constants";
+import { SIXTY } from "@/constants";
 
 export const secondsToMinutes = (seconds: number): number => {
-  const minutes = Math.floor(seconds / SIXTY_SECONDS || SIXTY_SECONDS);
-  const remainder = (seconds % SIXTY_SECONDS) / SIXTY_SECONDS;
+  const minutes = Math.floor(seconds / SIXTY || SIXTY);
+  const remainder = (seconds % SIXTY) / SIXTY;
   return remainder < 0.5 ? minutes : minutes + 1;
 };
 
 export const minutesToSeconds = (minute: number): number => {
-  const seconds = minute * SIXTY_SECONDS;
+  const seconds = minute * SIXTY;
   return seconds;
 };
