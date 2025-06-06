@@ -1,6 +1,6 @@
 import { SIXTY } from "@/constants";
 import type { CostSettings, FeeResult, Match, Player } from "./types";
-import { secondsToMinutes } from "./time";
+import { milisecondsToMinutes } from "./time";
 import { Decimal } from "decimal.js";
 import { roundMoney } from "./currency";
 
@@ -22,19 +22,30 @@ export function calculateFees(
     ])
   );
   if (!costs) return [];
-
   for (const match of matches) {
     const allPlayers = [...match.team1, ...match.team2];
-    const winners =
-      !!match.winner && match.winner === "team1" ? match.team1 : match.team2;
-    const losers =
-      !!match.winner && match.winner === "team1" ? match.team2 : match.team1;
+    const winners = !match.winner
+      ? []
+      : match.winner === "team1"
+      ? match.team1
+      : match.team2;
+    const losers = !match.winner
+      ? []
+      : match.winner === "team1"
+      ? match.team2
+      : match.team1;
 
     // Only calculate fees if applyStageFee is true
     const moneyForPerMinute = new Decimal(costs.stage).div(SIXTY);
 
+    const durations =
+      match.endedAt && match.startedAt
+        ? new Date(match.endedAt).getTime() -
+          new Date(match.startedAt).getTime()
+        : 0;
+
     const gameFee = match.applyStageFee
-      ? new Decimal(secondsToMinutes(match.duration)).mul(moneyForPerMinute)
+      ? new Decimal(milisecondsToMinutes(durations)).mul(moneyForPerMinute)
       : new Decimal(0);
 
     const gameFeePerPlayer = gameFee.div(allPlayers.length);

@@ -3,12 +3,10 @@ import { useAppContext } from "@/hooks/useAppContext";
 import { getPlayers } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 import { Swords } from "lucide-react";
-import React, { useEffect } from "react";
 import type { Match as MatchType } from "../lib/types";
 import { Badge } from "./ui/badge";
 import MatchForm from "./MatchForm";
-import { SIXTY } from "@/constants";
-import { secondsToMinutes } from "@/lib/time";
+import Durations from "./Durations";
 
 interface MatchProps {
   match: MatchType;
@@ -17,12 +15,6 @@ interface MatchProps {
 export default function Match({ match }: MatchProps) {
   const { removeMatch, updateMatch } = useAppContext();
 
-  const timer = React.useRef<NodeJS.Timeout | string | number | undefined>(
-    undefined
-  );
-
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [duration, setDuration] = React.useState(match.duration || SIXTY);
   const players = getPlayers();
   const team1Players = players.filter((p) => match.team1.includes(p.id));
   const team2Players = players.filter((p) => match.team2.includes(p.id));
@@ -31,45 +23,28 @@ export default function Match({ match }: MatchProps) {
   const isTeam2Winner = match.winner === "team2";
 
   const startMatch = () => {
-    setIsPlaying(true);
+    let startedAt = match.startedAt || new Date();
+
+    if (match.startedAt && match.endedAt) {
+      const durations =
+        new Date(match.endedAt).getTime() - new Date(match.startedAt).getTime();
+      startedAt = new Date(Date.now() - durations);
+    }
+
     updateMatch(match.id, {
       isRunning: true,
+      endedAt: undefined,
+      startedAt: startedAt,
     });
   };
 
   const stopMatch = () => {
-    setIsPlaying(false);
     updateMatch(match.id, {
       isRunning: false,
+      endedAt: new Date(),
     });
-    clearInterval(timer.current);
   };
 
-  useEffect(() => {
-    if (match.isRunning) {
-      setIsPlaying(true);
-      timer.current = setInterval(() => {
-        setDuration((prev) => prev + 1);
-      }, 1000); // Increment every second
-    } else {
-      if (timer.current) {
-        clearInterval(timer.current);
-        timer.current = undefined;
-      }
-    }
-
-    return () => {
-      if (timer.current) {
-        clearInterval(timer.current);
-        timer.current = undefined;
-      }
-    };
-  }, [match.isRunning]);
-  useEffect(() => {
-    if (match.duration !== duration) {
-      updateMatch(match.id, { duration });
-    }
-  }, [match.duration, match.isRunning, duration, updateMatch, match.id]);
   return (
     <div className="relative bg-gradient-to-r p-3 sm:p-4 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-200 shadow-sm hover:shadow-md from-blue-50 to-indigo-50  ring-2 ring-blue-200">
       <div className="flex justify-between items-start gap-2 flex-col sm:flex-row">
@@ -107,12 +82,7 @@ export default function Match({ match }: MatchProps) {
             </p>
             <p className="flex items-center gap-1">
               <b>Thời gian:</b>
-              {`${secondsToMinutes(duration).toString().padStart(2, "0")}:${(
-                duration % SIXTY
-              )
-                .toString()
-                .padStart(2, "0")}`}{" "}
-              phút
+              <Durations isRunning={match.isRunning} match={match} />
             </p>
             <p>
               <b>Độ cầu: </b> {match.betShuttlecockUsed ? "Có" : "Không"}
@@ -127,7 +97,7 @@ export default function Match({ match }: MatchProps) {
         <div className="flex items-center gap-2 shrink-0">
           {/* Timer Controls */}
           <div className="flex items-center gap-1">
-            {isPlaying ? (
+            {match.isRunning ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -148,12 +118,12 @@ export default function Match({ match }: MatchProps) {
           </div>
 
           {/* Edit Button */}
-          {!isPlaying && (
+          {!match.isRunning && (
             <MatchForm key={JSON.stringify(match)} defaultValues={match} />
           )}
 
           {/* Delete Button */}
-          {!isPlaying && (
+          {!match.isRunning && (
             <Button
               size="sm"
               className="bg-red-500 hover:bg-red-600 rounded-lg p-1.5 sm:p-2"

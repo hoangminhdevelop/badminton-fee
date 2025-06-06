@@ -15,8 +15,6 @@ export default function FeeTable() {
     cost ? calculateFees(matches, players, cost) : []
   );
 
-  console.log("fees", fees);
-
   const reloadFeeTable = () => {
     setFees(cost ? calculateFees(matches, players, cost) : []);
   };

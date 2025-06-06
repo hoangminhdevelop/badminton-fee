@@ -21,7 +21,7 @@ export default function MatchList() {
       <div className="pt-0">
         <div className="space-y-3">
           {sortedMatches.map((match) => (
-            <MatchComponent key={match.id + match.duration} match={match} />
+            <MatchComponent key={match.id} match={match} />
           ))}
           {matches.length === 0 && (
             <div className="text-center py-8 sm:py-12 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-200">

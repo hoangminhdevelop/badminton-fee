@@ -22,11 +22,12 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
+import { subMinutes } from "date-fns";
 
 import { useAppContext } from "@/hooks/useAppContext";
 import type { Match } from "@/lib/types";
 import { v4 as uuid } from "uuid";
-import { minutesToSeconds, secondsToMinutes } from "@/lib/time";
+import { milisecondsToMinutes } from "@/lib/time";
 import { toast } from "sonner";
 import { Switch } from "./ui/switch";
 
@@ -40,7 +41,7 @@ const matchSchema = z.object({
     .min(1, "Phải chọn ít nhất 1 người")
     .max(2, "Tối đa là 2 người"),
   shuttlecockUsed: z.coerce.number().min(0),
-  duration: z.coerce.number().min(1).transform(minutesToSeconds),
+  duration: z.coerce.number().min(0),
   winner: z
     .enum(["team1", "team2"], {
       message: "Phải chọn đội thắng",
@@ -69,21 +70,18 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
     defaultValues: isUpdateForm
       ? {
           ...defaultValues,
-          duration: secondsToMinutes(defaultValues.duration),
-          betShuttlecockUsed:
-            typeof defaultValues.betShuttlecockUsed === "boolean"
-              ? defaultValues.betShuttlecockUsed
-              : false,
-          applyStageFee:
-            typeof defaultValues.applyStageFee === "boolean"
-              ? defaultValues.applyStageFee
-              : false,
+          duration: milisecondsToMinutes(
+            defaultValues.endedAt && defaultValues.startedAt
+              ? new Date(defaultValues.endedAt).getTime() -
+                  new Date(defaultValues.startedAt).getTime()
+              : 0
+          ),
         }
       : {
           team1: [],
           team2: [],
           shuttlecockUsed: 0,
-          duration: 1,
+          duration: 0,
           winner: null,
           betShuttlecockUsed: false,
           applyStageFee: false,
@@ -100,14 +98,28 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
     return players.filter((p) => !team1.includes(p.id));
   };
 
-  const onSubmit = (data: MatchForm) => {
-    // Update match processing
+  const onSubmit = ({ duration, ...data }: MatchForm) => {
+    const gameTimes: {
+      startedAt: Date;
+      endedAt?: Date;
+    } = {
+      startedAt: new Date(),
+      endedAt: undefined,
+    };
+
+    if (duration) {
+      const now = new Date();
+      gameTimes.startedAt = subMinutes(now, duration);
+      gameTimes.endedAt = now;
+    }
+
     if (isUpdateForm) {
+      // Update match processing
       const updatedMatchData: Match = {
         ...defaultValues,
         ...data,
+        ...gameTimes,
       };
-      console.log("updatedMatchData", updatedMatchData);
       updateMatch(defaultValues.id, updatedMatchData);
       toast.success("Cập nhật trận đấu thành công!");
     }
@@ -120,6 +132,7 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
         id: matchId,
         isRunning: false,
         createdAt: new Date(),
+        ...gameTimes,
       };
       addNewMatch(matchData);
       toast.success("Tạo trận đấu mới thành công!");
@@ -361,7 +374,6 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                           type="number"
                           inputMode="numeric"
                           className="h-10 sm:h-11"
-                          min={1}
                           step={1}
                           {...field}
                         />
@@ -377,9 +389,6 @@ export default function MatchForm({ defaultValues }: MatchFormProps) {
                   render={({ field: { value, onChange } }) => {
                     const isTeam1Winner = value === "team1";
                     const isTeam2Winner = value === "team2";
-
-                    console.log("isTeam1Winner", isTeam1Winner);
-                    console.log("value", value);
 
                     return (
                       <FormItem>
